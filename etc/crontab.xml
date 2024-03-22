@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="altitude_updateorderqueue" instance="Altitude\SX\Cron\UpdateOrderQueue" method="execute">
+            <schedule>*/10 * * * *</schedule>
+        </job>
+        <job name="altitude_updateorderfields" instance="Altitude\SX\Cron\UpdateOrderFields" method="execute">
+            <schedule>*/15 * * * *</schedule>
+        </job>
+        <job name="altitude_updateorderpackage" instance="Altitude\SX\Cron\UpdatePackageShipping" method="execute">
+            <schedule>*/15 * * * *</schedule>
+        </job>
+		<job instance="Altitude\SX\Cron\Payments" method="execute" name="altitude_sxpayments_payments">
+			<schedule>*/5 * * * *</schedule>
+		</job>
+		<job name="altitude_sxpricing_fetchprice" instance="Altitude\SX\Cron\FetchPrice" method="execute">
+			<schedule>0 5 * * *</schedule>
+		</job>
+    </group>
+</config>
