@@ -1,3 +1,3 @@
 # Magento for SX
 
-![Connection](/.github/img/Connection.png
+![Connection](https://github/GreyWolfSys/Magento4SX/.github/img/Connection.png
