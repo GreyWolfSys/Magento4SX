@@ -1,3 +1,5 @@
 # Magento for SX
 
-![Connection](/.github/img/Connection.png)
+![Connection](/doc/img/Connection.png)
+
+
