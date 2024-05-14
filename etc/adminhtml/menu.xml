@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Altitude_SX::greywolfsystemsmenu" title="Altitude" module="Altitude_SX" sortOrder="20"  resource="Magento_Backend::content"/>
+        <add id="Altitude_SX::greywolfsystems" title="Settings" module="Altitude_SX" parent="Altitude_SX::greywolfsystemsmenu" sortOrder="2" resource="Magento_Backend::content"/>
+        <add id="Altitude_SX::greywolfsystemsapps" title="Applications" module="Altitude_SX" parent="Altitude_SX::greywolfsystemsmenu" sortOrder="5" resource="Magento_Backend::content"/>
+
+        <add id="Altitude_SX::defaults" title="Defaults" module="Altitude_SX" parent="Altitude_SX::greywolfsystems" sortOrder="10" action="adminhtml/system_config/edit/section/defaults" resource="Altitude_SX::defaults"/>
+        <add id="Altitude_SX::connectivity" title="Connectivity" module="Altitude_SX" parent="Altitude_SX::greywolfsystems" sortOrder="15" action="adminhtml/system_config/edit/section/connectivity" resource="Altitude_SX::connectivity"/>
+        <add id="Altitude_SX::payments"  dependsOnModule="Altitude_SX" title="Payment Processor" module="Altitude_SX" parent="Altitude_SX::greywolfsystems" sortOrder="20" action="adminhtml/system_config/edit/section/payments" resource="Altitude_SX::payments"/>
+        <add id="Altitude_SX::shipping_upcharge"  dependsOnModule="Altitude_SX" title="Shipping and Inventory" module="Altitude_SX" parent="Altitude_SX::greywolfsystems" sortOrder="10" action="adminhtml/system_config/edit/section/shipping_upcharge" resource="Altitude_SX::shipping_upcharge"/>
+    </menu>
+</config>

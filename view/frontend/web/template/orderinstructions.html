@@ -1,0 +1,12 @@
+
+
+<div><span class="instructions" id="instructiontitle" style="display:inline;"><strong  data-bind="i18n: 'Order Instructions'"></strong>: </span>
+
+<span class="instructions" id="instructiontext" data-bind="text: getValue()"></span></div>
+
+<script>
+    $('[name="order_instructions"]').on("input", function() {
+        $("#instructiontext").val(this.value);
+
+    });
+</script>
