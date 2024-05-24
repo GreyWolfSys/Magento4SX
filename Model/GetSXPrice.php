@@ -44,9 +44,14 @@ class GetSXPrice implements ObserverInterface
 
         $this->sx->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": ", "checking price... ");
         $moduleName = $this->sx->getModuleName(get_class($this));
-        $configs = $this->sx->getConfigValue(['apikey', 'cono', 'sxcustomerid', 'whse', 'onlycheckproduct','localpriceonly']);
+        $configs = $this->sx->getConfigValue(['apikey', 'cono', 'sxcustomerid', 'whse', 'onlycheckproduct','localpriceonly','localpricediscount' ]);
         extract($configs);
-
+		if (empty($localpricediscount) || !isset($localpricediscount) || $localpricediscount==0) {
+            $localpricediscount=1;
+        } else {
+            $localpricediscount=(100-$localpricediscount)/100;
+        }
+        $this->p21->gwLog("discount: " . $localpricediscount);
         $url = $this->sx->urlInterface()->getCurrentUrl();
         $ip = $this->remoteAddress->getRemoteAddress();
         $displayText = $observer->getEvent()->getName();
@@ -377,10 +382,16 @@ class GetSXPrice implements ObserverInterface
                 $bSkip = 'false';
             }
             if ($localpriceonly=="Magento") {
+            	$bSkip = 'true';
+                if ($localpricediscount<>1  && strpos($url, '/index/render/key/') == false) { // index/render/key/
+                    
+                    $price = $price * $localpricediscount;
+                }
+                $product->setPrice($price);
                 if ($debuggingflag == "true") {
                     $this->sx->gwLog("skip price for local price only setting");
                 }
-                $bSkip = 'true';
+                
             }
             $this->sx->getSession()->setApidown(false);
             $apidown = $this->sx->getSession()->getApidown();
@@ -434,16 +445,20 @@ class GetSXPrice implements ObserverInterface
                     }
                     return "";
                 }
-            } elseif ($apidown == true ) {
+            } elseif ($apidown == true  || $bSkip == 'true') {
                 if ($debuggingflag == "true") {
                     $this->sx->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": ", "Skipping SX price check for apidown or non-product page" . ($apidown));
                 }
 
-                if ($localpriceonly=="Hybrid") {
-                    return $price;
+                if ($localpriceonly=="Hybrid" || $localpriceonly=="Magento") {
+                    if ($localpriceonly=="Hybrid" ){
+                        $price = $price*$localpricediscount;
+                    }
+                    continue;
                 } else{
-                    return "";
+                    continue;
                 }
+				continue;
             } elseif ($visibility != "" && $visibility != "4" && $singleitem == "false" && $controller != "product") {
                 if ($debuggingflag == "true") {
                     $this->sx->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": ", "Skipping SX price check for invis1");
@@ -549,16 +564,18 @@ class GetSXPrice implements ObserverInterface
 
                 $this->sx->getSession()->setApidown(true);
                 $apidown = $this->sx->getSession()->getApidown();
-                if ($localpriceonly=="Hybrid") {
+                if ($localpriceonly=="Hybrid" || $localpriceonly=="Magento") {
                     $newprice = $price;
+                    $newprice = $newprice*$localpricediscount;
                 } else{
                     $newprice = 0;
                 }
             }
 
             if (isset ($gcnl["fault"])) {
-                if ($localpriceonly=="Hybrid") {
+                if ($localpriceonly=="Hybrid" || $localpriceonly=="Magento") {
                     $newprice = $price;
+                    $newprice = $newprice*$localpricediscount;
                 } else{
                     $newprice = 0;
                 }
@@ -610,9 +627,10 @@ class GetSXPrice implements ObserverInterface
                         if (isset ($_gcnl["listprice"])) {
                             $listprice = $_gcnl["listprice"];
                         }
-                        if ($price==0 && $localpriceonly=="Hybrid") {
-                            $price = $product->getPrice();
-                        } 
+                        if ($price==0 && $localpriceonly=="Hybrid" || $localpriceonly=="Magento") {
+	                        $price = $product->getPrice();
+	                        $price = $price*$localpricediscount;
+	                    }
                         if ($price > 0) {
                             $product->setSpecialPrice($price);
                             $product->setPrice($price);
@@ -657,12 +675,11 @@ class GetSXPrice implements ObserverInterface
                         } //end pround check
 
                     }
-                    if (isset ($gcnl["listprice"])) {
-                        $listprice = $gcnl["listprice"];
-                    }
-                    if ($price==0 && $localpriceonly=="Hybrid") {
+                    if ($price==0 && $localpriceonly=="Hybrid" || $localpriceonly=="Magento") {
                         $price = $product->getPrice();
-                    } 
+                        $price = $price*$localpricediscount;
+                    }
+
                     $product->setPrice($price);
                     $product->setFinalPrice($price);
 
@@ -719,6 +736,12 @@ class GetSXPrice implements ObserverInterface
             } else {
                 if ($debuggingflag == "true") {
                     $this->sx->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": ", "not set");
+                }
+            	if ($price==0 && $localpriceonly=="Hybrid" || $localpriceonly=="Magento") {
+                    $product->setPrice($price);
+                    //$product->setFinalPrice($price);
+                    
+                    $this->p21->gwLog("price=$price");
                 }
             }
         } catch (Exception $e) {

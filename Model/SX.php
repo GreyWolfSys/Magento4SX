@@ -98,6 +98,7 @@ class SX extends \Magento\Framework\Model\AbstractModel
             'listorbase' => 'defaults/misc/listorbase',
             'show_order_instructions' => 'defaults/shoppingcart/show_order_instructions',
             'localpriceonly' => 'defaults/products/local_price_only',
+            'localpricediscount' => 'defaults/products/local_price_discount',
 
             'cenposuid' => "",
             'cenpospwd' => "",
