@@ -17,6 +17,8 @@ class Orderdetail extends \Altitude\SX\Controller\CustomerAbstract
     protected $_cart;
 
     protected $sx;
+    protected $session;
+    protected $url;
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -24,8 +26,10 @@ class Orderdetail extends \Altitude\SX\Controller\CustomerAbstract
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
         \Magento\Checkout\Model\Cart $cart,
         \Altitude\SX\Model\SX $sx,
-       \Magento\Checkout\Model\SessionFactory $checkoutSession,
-       \Magento\Quote\Api\CartRepositoryInterface $cartRepository
+        \Magento\Checkout\Model\SessionFactory $checkoutSession,
+        \Magento\Quote\Api\CartRepositoryInterface $cartRepository,
+        \Magento\Checkout\Model\Session $session ,
+        \Magento\Framework\UrlInterface $url
     ) {
         $this->_customerSession = $customerSession;
         parent::__construct($context, $customerSession);
@@ -33,7 +37,8 @@ class Orderdetail extends \Altitude\SX\Controller\CustomerAbstract
         $this->productRepository = $productRepository;
         $this->_cart = $cart;
         $this->checkoutSession = $checkoutSession;
-        $this->cartRepository = $cartRepository;
+        $this->session = $session;
+        $this->url = $url;
     }
 
     public function execute()
@@ -161,7 +166,14 @@ class Orderdetail extends \Altitude\SX\Controller\CustomerAbstract
                             $updatedGrandTotal = $item->getQuote()->setGrandTotal($grandTotal);
                         }
                         $this->_cart->save();
-                        $this->_redirect('checkout/cart');
+                     //   $this->session->setRedirectUrl($this->url->getUrl('checkout/cart/index'));
+                        
+                        $storeManager = $objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
+                        $storeCode = $storeManager->getStore()->getCode();
+                        //$this->_redirect('/' . $storeCode . '/checkout/cart/index');
+                        header("Location: /$storeCode/checkout/cart/index");
+                        die();
+                        //$this->_redirect($this->url->getUrl('checkout/cart/index'));
                     }
                 }
             }

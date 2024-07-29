@@ -725,11 +725,15 @@ error_log($result);*/
 
     public function isAbleToEditAddress()
     {
-        return ($this->scopeConfig->getValue(
+        $configSetting=$this->scopeConfig->getValue(
             'defaults/gwcustomer/allow_edit_address',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE) || $this->isCustomerDefault()
-        );
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $custDefault=$this->isCustomerDefault();
+        $res = ( $configSetting || $custDefault );
+        return $res;
     }
+
+  
     public function isCustomerDefault()
     {
 

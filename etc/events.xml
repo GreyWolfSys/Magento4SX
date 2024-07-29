@@ -41,9 +41,6 @@
 	<event name="catalog_product_collection_load_after">
 		<observer name="belvg_verpage_controller_front_send_response_before6" instance="Altitude\SX\Model\GetSXPrice"  />
 	</event>
-    <event name="catalog_product_load_after">
-        <observer name="altitude_catalog_product_load_after" instance="Altitude\SX\Model\GetLocalPriceDiscount"  />
-    </event>
     <event name="customer_login">
         <observer name="gw_customer_login_observer" instance="Altitude\SX\Observer\CustomerLogin" />
     </event>

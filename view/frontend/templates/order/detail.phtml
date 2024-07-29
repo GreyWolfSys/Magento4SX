@@ -109,22 +109,22 @@ if (isset($addon["SalesOrderAddonsSelectResponseContainerItems"])) {
             <div class="box box-order-shipping-method">
                  <strong class="box-title"><span><?= __('Tracking Information') ?></span></strong>
                 <div class="box-content">
-                    <strong>Tracking Number') ?>:</strong>
+                    <strong><?= __('Tracking Number') ?>:</strong>
 
                     <?php if (isset($Order["trackerno"])): ?>
                         <?php echo $Order["trackerno"]; ?>
                     <?php elseif (isset($package["trackerno"])): ?>
                         <?php echo $package["trackerno"]; ?> 
-                    <?php else: ?>N/A
+                    <?php else: ?><?= __('N/A') ?>
                     <?php endif; ?><br />
                     
-                    <strong>Shipped') ?>:</strong>
+                    <strong><?= __('Shipped') ?>:</strong>
 
                     <?php if (isset($Order["shippedfl"])): ?>
                         <?php echo $Order["shippedfl"]; ?>
                     <?php elseif ($Order["stagecd"]>=3): ?>   
                         <?php echo $Order["shipdt"]; ?>
-                    <?php else: ?>N/A
+                    <?php else: ?><?= __('N/A') ?>
                     <?php endif; ?><br />
                 </div>
             </div>
@@ -242,7 +242,7 @@ if (isset($addon["SalesOrderAddonsSelectResponseContainerItems"])) {
                         <button type="submit" class="action" value="Reorder"><?= __('Reorder') ?></button
                     </td>
                     <td colspan="6" align="right">
-                        <strong><?= __('Subotal') ?><:</td>
+                        <strong><?= __('Subotal') ?>:</td>
                     <td align="right"><?php echo $this->helper(Magento\Checkout\Helper\Data::class)->formatPrice(floatval($total)) ?></td>
                 </tr>
                 <?php

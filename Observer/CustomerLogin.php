@@ -164,7 +164,7 @@ class CustomerLogin implements ObserverInterface
         extract($configs);
 
 
-        $this->sx->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": " , "address import allowed, continuing");
+        //$this->sx->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": " , "address import allowed, continuing");
         $customerSession = $this->sx->getSession();
         $this->sx->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": " , "$moduleName: Check if logged in");
 
@@ -322,6 +322,7 @@ class CustomerLogin implements ObserverInterface
                     $address->setCountryId($countrycode);
                     $address->setTelephone($phone);
                     $address->setFax($GCCust["faxphoneno"]);
+                    $addrSet=false; 
                     if (isset($bBill)) {
                         $addrSet=true;
                         //$address->setIsDefaultBilling('0');

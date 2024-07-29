@@ -42,14 +42,8 @@ class GetAjax extends \Magento\Framework\App\Action\Action
         $moduleName = $this->sx->getModuleName(get_class($this));
         $controller = $this->getRequest()->getControllerName();
         $url = $this->sx->urlInterface()->getCurrentUrl();
-        $configs = $this->sx->getConfigValue(['cono', 'sxcustomerid', 'whse','localpriceonly','localpricediscount']);
+        $configs = $this->sx->getConfigValue(['cono', 'sxcustomerid', 'whse','localpriceonly']);
         extract($configs);
-    
-        if (empty($localpricediscount) || !isset($localpricediscount) || $localpricediscount==0) {
-            $localpricediscount=1;
-        } else {
-            $localpricediscount = (100-$localpricediscount)/100;
-        }
 
         $this->sx->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": " , "$moduleName: " . $controller . " / u: " . $url);
 
@@ -80,7 +74,6 @@ class GetAjax extends \Magento\Framework\App\Action\Action
 
         if ($localpriceonly =="Magento") {
             $newprice = $product->getPrice();
-           
         }
         elseif ($apidown == false) {
             $this->sx->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": " , "calling config price api. cono= " . $cono . " prod= " . $prod . " whse= " . $whse . " cust= " . $custno);
@@ -96,7 +89,6 @@ class GetAjax extends \Magento\Framework\App\Action\Action
                     $this->sx->getSession()->setApidown(true);
                     if ($localpriceonly=="Hybrid") {
                         $newprice = $productObj->getPrice();
-                        $newprice = $newprice*$localpricediscount;
                     } else{
                         $newprice = 0;
                     }
@@ -140,7 +132,6 @@ class GetAjax extends \Magento\Framework\App\Action\Action
         }
         if ($newprice==0 && $localpriceonly=="Hybrid") {
             $newprice = $productObj->getPrice();
-            $newprice = $newprice*$localpricediscount;
         }
 
         $result = $this->_resultJsonFactory->create();

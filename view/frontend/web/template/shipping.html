@@ -15,18 +15,20 @@
         <each args="getRegion('address-list-additional-addresses')" render="" ></each>
 
         <!-- Address form pop up -->
-        <if args="!isFormInline">
-            <button type="button"
-                    if="isAbleToEditAddress"
-                    class="action action-show-popup"
-                    click="showFormPopUp"
-                    visible="!isNewAddressAdded()">
-                    <span translate="'New Address'"></span>
-            </button>
-            </div>
-            <div id="opc-new-shipping-address"
-                    visible="isFormPopUpVisible()"
-                 render="shippingFormTemplate"></div>
+        <if args="isAbleToEditAddress">
+            <if args="!isFormInline">
+                <button type="button"
+                        if="isAbleToEditAddress()"
+                        class="action action-show-popup grr "
+                        click="showFormPopUp"
+                        visible="isAbleToEditAddress()">
+                        <span translate="'New Address'"></span>
+                </button>
+                </div>
+                <div id="opc-new-shipping-address"
+                        visible="isFormPopUpVisible()"
+                    render="shippingFormTemplate"></div>
+            </if>
         </if>
 
         <each args="getRegion('before-form')" render="" ></each>

@@ -98,7 +98,6 @@ class SX extends \Magento\Framework\Model\AbstractModel
             'listorbase' => 'defaults/misc/listorbase',
             'show_order_instructions' => 'defaults/shoppingcart/show_order_instructions',
             'localpriceonly' => 'defaults/products/local_price_only',
-            'localpricediscount' => 'defaults/products/local_price_discount',
 
             'cenposuid' => "",
             'cenpospwd' => "",
@@ -276,6 +275,7 @@ class SX extends \Magento\Framework\Model\AbstractModel
     public function LogAPICall($apiname, $moduleName = "")
     {
         // $this->getModuleList();
+        
         try {
             $agent = $this->httpHeader->getHttpUserAgent();
             $url = $this->urlInterface->getCurrentUrl();
@@ -518,7 +518,7 @@ class SX extends \Magento\Framework\Model\AbstractModel
 
         return [
             'wsdlUrl' => $apiUrl . "wsdl.aspx?result=wsdl&apikey=$apikey&api=$apiName",
-            'mapUrl' => $apiUrl . "ws.aspx?result=ws&apikey=$apikey&api=$apiName"
+            'mapUrl' => $apiUrl . "ws.aspx?result=ws&gwp=i&apikey=$apikey&api=$apiName"
         ];
     }
 
@@ -827,7 +827,7 @@ class SX extends \Magento\Framework\Model\AbstractModel
 
         $params1 = (object) [];
         $params1->cono = $cono;
-        $params1-> $custno;
+        $params1->custno = $custno;
         $params1->APIKey = $apikey;
         $rootparams = (object) [];
         $rootparams->SalesCustomerSelectRequestContainer = $params1;
@@ -2074,6 +2074,7 @@ class SX extends \Magento\Framework\Model\AbstractModel
             if (isset ($shipping_address["street"])) {
 
                 $addr1 = $shipping_address["street"];
+                $addr1 = str_replace(array("\r", "\n"), ' ', $addr1);
             } else {
                 $addr1 = "";
             }
@@ -2230,7 +2231,7 @@ class SX extends \Magento\Framework\Model\AbstractModel
 
         $shiptonm = $name;
         $shiptoaddr1 = $addr1;
-        $shiptoaddr2 = $addr2 . ' .';
+        $shiptoaddr2 = $addr2 ;
         $shiptocity = $city;
         $shiptost = $statecd;
         $shiptozip = $zipcd;
@@ -2396,7 +2397,7 @@ class SX extends \Magento\Framework\Model\AbstractModel
             'refer' => $refer
         );
         $this->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": ", "add in optional fields to  param head object" . " Increment ID=" . $orderincid);
-        if ($erpAddress == "" && $shipto2erp == "1" && ($custno != $sxcustomerid)) {
+        if ($erpAddress == "" && ($custno != $sxcustomerid)) {
             // $paramsHead[] = new SoapVar($shipto, XSD_STRING, null, null, 'shipto');
             $thisparam = array_merge($thisparam, array('shipto' => $shipto));
         } elseif (isset ($erpAddress)) {
@@ -2405,11 +2406,12 @@ class SX extends \Magento\Framework\Model\AbstractModel
         }
 
 
-        if (false) { //taxing fields
-            //  $thisparam=array_merge( $thisparam, array('taxauthcountryCAUSorAU' => $countrycd));
-            $thisparam = array_merge($thisparam, array('taxauthstate' => $shiptost));
+        if ($custTaxable == "Y" || $custTaxable == "y" ) {
+            $thisparam = array_merge($thisparam, array('taxable' => "Y"));
+          //    $thisparam=array_merge( $thisparam, array('taxauthcountryCAUSorAU' => $countrycd));
+          //  $thisparam = array_merge($thisparam, array('taxauthstate' => $shiptost));
             //   $thisparam=array_merge( $thisparam, array('taxauthcounty' => $taxauthcounty));
-            //   $thisparam=array_merge( $thisparam, array('taxauthcity' => $shiptocity));
+           //    $thisparam=array_merge( $thisparam, array('taxauthcity' => $shiptocity));
             //   $thisparam=array_merge( $thisparam, array('taxauthother1' => $taxauthother1));
             //   $thisparam=array_merge( $thisparam, array('taxauthother2' => $taxauthother2));
         }
@@ -2434,9 +2436,7 @@ class SX extends \Magento\Framework\Model\AbstractModel
             //$paramsHead[] = new SoapVar($user24, XSD_STRING, null, null, 'user24');
             $thisparam = array_merge($thisparam, array('user24' => $user24));
         }
-        if ($custTaxable == "y") {
-            $thisparam = array_merge($thisparam, array('taxable' => "Y"));
-        }
+        
         $paramsHead[] = new \SoapVar($thisparam, SOAP_ENC_OBJECT);
         $this->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": ", "done creating param head object" . " Increment ID=" . $orderincid);
         $lineno = 0;
@@ -2551,7 +2551,7 @@ class SX extends \Magento\Framework\Model\AbstractModel
             $paramsDetail[] = new \SoapVar(array('shipprod' => $type), SOAP_ENC_OBJECT);
             $paramsDetail[] = new \SoapVar(array('unit' => $unit), SOAP_ENC_OBJECT);
             $paramsDetail[] = new \SoapVar(array('price' => $price), SOAP_ENC_OBJECT);
-            if ($custTaxable == "y") {
+            if ($custTaxable == "Y" || $custTaxable == "y"  ) {  //or default cuswtomer??
                 $paramsDetail[] = new \SoapVar(array('taxablefl' => 'Y'), SOAP_ENC_OBJECT);
             }
             if ($discountAmount > 0) {
@@ -2648,7 +2648,7 @@ class SX extends \Magento\Framework\Model\AbstractModel
                         $this->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": ", "addon = " . $addonno . " Increment ID=" . $orderincid);
                         if (!empty ($addonno) && is_numeric($addonno)) { //check for freight
                             $cart = $objectManager->get('\Magento\Checkout\Model\Cart');
-                            $shippingAmount = 22;//$cart->getQuote()->getShippingAddress()->getShippingAmount();
+                            $shippingAmount = $cart->getQuote()->getShippingAddress()->getShippingAmount();
                             $this->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": ", "shippingAmount = " . $shippingAmount . " Increment ID=" . $orderincid . " url=" . $url);
                             if ($shippingAmount > 0) {
                                 $addonamt = $shippingAmount;
@@ -2702,7 +2702,7 @@ class SX extends \Magento\Framework\Model\AbstractModel
                     $addonno = $this->getConfigValue('addonno');
                     $this->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": ", "addon = " . $addonno . " Increment ID=" . $orderincid);
                     if (!empty ($addonno) && is_numeric($addonno)) { //check for freight
-                        $shippingAmount = 23;// (float)$order->getShippingAmount(); 
+                        $shippingAmount =(float)$order->getShippingAmount(); 
                         $this->gwLog(__CLASS__ . "/" . __FUNCTION__ . ": ", "shippingAmount = " . $shippingAmount . " Increment ID=" . $orderincid);
                         if ($shippingAmount > 0) {
                             $addonamt = $shippingAmount;
@@ -3385,7 +3385,7 @@ class SX extends \Magento\Framework\Model\AbstractModel
 
         //sending alert email
         $templateId = 'order_erp_fail_template'; // template id
-        $this->SendAlert(__("Problem creating SX order."), "There is a problem creating SX order from order# " . $orderid . ". SX Order not created. Will retry.",$templateId);
+        $this->SendAlert(__("Problem creating SX order."), "There is a problem creating SX order from order # " . $orderid . ". SX Order not created. Will retry.",$templateId);
            
 
         //end sending alert email 

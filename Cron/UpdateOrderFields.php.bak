@@ -56,9 +56,9 @@ class UpdateOrderFields
         $conn= $configResult['db']['connection']['default'];
         $db_host = $conn['host']; //'localhost';
         $db_port = '3306';
-        $db_username = $conn['username']; 
-        $db_password = $conn['password'];
-        $db_primaryDatabase = $conn['dbname'];
+        $db_username = $conn['username']; //'magento_mg3';
+        $db_password = $conn['password'];//'G.Vu1O755x587yQnw8u50';
+        $db_primaryDatabase = $conn['dbname']; //'magento_mg3';
 
 
 		$dbConnection = new \mysqli($db_host, $db_username, $db_password, $db_primaryDatabase);

@@ -1,0 +1,17 @@
+20240726, version 4.3.2
+Fixed issue with multistore transfering user to different store when adding to cart.
+
+Added option to create order instructions during checkout: If set to 'Yes', an order instructions field will appear on the shipping screen. This gets sent to SX as an order note.
+Added notification for orders that fail to insert into SX, using template order_erp_fail_template
+Fixed issue with customer taxable flag carrying over to orders
+Updated visible elements to include Magento's translation functionality
+Added ability to insert order notes, up to 14 notes
+Fixed issue with module update not updating all fields correctly
+Corrected CSS source pointer for Altitude CSS file
+
+
+20240524, version 4.3.1
+Added hybrid model for dynamic pricing: Selecting "SX" will attempt to get the live and dynamic price from SX. "Magento" means using just the price stored in Magento. "Hybrid" uses the Magento price if the SX price is not available.
+
+
+
